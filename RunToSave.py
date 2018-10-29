@@ -7,6 +7,7 @@ import helpFunc as hf
 
 
 
+
 # TO DO: Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.
 # Make a list of calibration images
 images = glob.glob('camera_cal/calibration*.jpg')
@@ -27,7 +28,7 @@ print("The distortion coefficients are :" + str(dist))
 filepath = 'camera_cal/calibration1.jpg'
 chessboard = cv2.imread(filepath)
 dst_chessboard = cv2.undistort(chessboard, mtx, dist, None, mtx)
-cv2.imwrite('output_images/dst_chessboard.jpg', dst_chessboard, None)
+#cv2.imwrite('output_images/dst_chessboard.jpg', dst_chessboard, None)
 
 # Save the camera calibration result for later use (we won't worry about rvecs / tvecs)
 dist_pickle = {}

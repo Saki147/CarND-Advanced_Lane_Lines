@@ -18,23 +18,16 @@ file = 'video' #'image' #'video'
 
 
 if file == 'image':
-    image =cv2.imread('test_images/test5.jpg') #cv2.imread('test_images/straight_lines1.jpg')  # cv2.imread('test_images/challenge_video_frame.jpg')
+    image =cv2.imread('test_images/test1.jpg') #cv2.imread(
+    # 'test_images/straight_lines1.jpg')  # cv2.imread('test_images/challenge_video_frame.jpg')
     result = pl.plotLane(image)
     plt.imshow(result)
-    cv2.imwrite('output_images/try.jpg', result, None)
+    cv2.imwrite('output_images/final_test1.jpg', result, None)
     plt.show()
 
 elif file == 'video':
-    clip1 = VideoFileClip("harder_challenge_video.mp4")
-    #clip1 = VideoFileClip("challenge_video.mp4").subclip(0, 15)
-    #cap = cv2.VideoCapture("challenge_video.mp4")
-    #while (cap.isOpened()):
-
-       # _, frame = cap.read()
-       # cv2.imwrite('output_images/challeng_video_frame.jpg',frame, None)
-       # plt.imshow(frame)
-       # plt.show()
-    white_output = 'output_images/hard_challenge_video.mp4'
+    clip1 = VideoFileClip("project_video.mp4") #.subclip(30,32)
+    white_output = 'output_images/project_video.mp4'
     white_clip = clip1.fl_image(pl.plotLane) #NOTE: this function expects color images!!
     #%time white_clip.write_videofile(white_output, audio=False)
     white_clip.write_videofile(white_output)

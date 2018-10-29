@@ -19,7 +19,7 @@ def find_lane_pixels(binary_warped):
     # Choose the number of sliding windows
     nwindows = 9
     # Set the width of the windows +/- margin
-    margin = 100
+    margin = 60
     # Set minimum number of pixels found to recenter window
     minpix = 50
 
@@ -111,8 +111,8 @@ def fit_polynomial(binary_warped):
     out_img[righty, rightx] = [0, 0, 255]
 
     # Plots the left and right polynomials on the lane lines
-    #**plt.plot(left_fitx, ploty, color='yellow')
-    #**plt.plot(right_fitx, ploty, color='yellow')
+    plt.plot(left_fitx, ploty, color='yellow')
+    plt.plot(right_fitx, ploty, color='yellow')
     return out_img, left_fit, right_fit, left_fitx, right_fitx
 
 def fit_real_world_polynomial(binary_warped, ympp, xmpp ):

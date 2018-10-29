@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import matplotlib.pyplot as plt
 
 
 def CameraCalibration(images):
@@ -235,8 +236,11 @@ def fit_polynomial(binary_warped):
     out_img[righty, rightx] = [0, 0, 255]
 
     # Plots the left and right polynomials on the lane lines
-    #**plt.plot(left_fitx, ploty, color='yellow')
-    #**plt.plot(right_fitx, ploty, color='yellow')
+    plt.imshow(out_img)
+    plt.plot(left_fitx, ploty, color='yellow')
+    plt.plot(right_fitx, ploty, color='yellow')
+    plt.axis("off")
+    plt.show()
     return out_img, left_fit, right_fit, left_fitx, right_fitx
 
 def fit_real_world_polynomial(binary_warped, ympp, xmpp ):

@@ -25,10 +25,14 @@ def plotLane(image):
 
 
     # TO DO: Apply a mask of region of interest
-    #vertices = np.array([[(100,720), (565,460), (725, 460), (1180, 720)]], dtype=np.int32)
-    vertices = np.array([[(200,720), (650,460), (750, 460), (1100, 720)]], dtype=np.int32)
+    #vertices = np.array([[(100,720), (565,460), (725, 460), (1180, 720)]],
+    # dtype=np.int32)
+    vertices = np.array([[(100,720), (550,460), (800, 460), (1280, 720)]],
+                        dtype=np.int32)
     masked_img = hf.region_of_interest(threshold_binary, vertices)
-
+    #plt.imshow(masked_img)
+    #plt.axis("off")
+    #plt.show()
 
     # TO DO: Apply a perspective transform to rectify binary image ("birds-eye view")
     warped, M = hf.bird_eye(masked_img)
@@ -38,6 +42,12 @@ def plotLane(image):
     # Fit the polynomial equation and get the parameters for left and right lane lines
     binary_warped = np.copy(warped)
     out_img = hf.find_lane_pixels(binary_warped, left_line, right_line)
+    # Plots the left and right polynomials on the lane lines
+    #plt.imshow(out_img)
+    #plt.plot(left_line.allx, left_line.ally, color='yellow')
+   # plt.plot(right_line.allx, right_line.ally, color='yellow')
+   # plt.axis("off")
+    #plt.show()
 
 
     # TO DO: Determine the curvature of the lane and vehicle position with respect to center.
@@ -46,7 +56,7 @@ def plotLane(image):
     # Calculate the lane lines curvature at the bottom of the image in real world
     # Convert the pixels into the distance and fit in the polynomial equations
     ympp = 3 / 100  # meters per pixel in y dimension
-    xmpp = 3.7 / 800  # meters per pixel in x dimension
+    xmpp = 3.7 / 630  # meters per pixel in x dimension
     ploty = ympp*left_line.ally # distance in y in real world
     left_fit, right_fit, left_base, right_base = hf.fit_real_world_polynomial(binary_warped, ympp, xmpp, left_line, right_line)
     # Calculate the curvature in the real world
@@ -57,7 +67,7 @@ def plotLane(image):
 
     #print('The left curvature is ' + str(left_curverad) + ' m, and the right curvature is ' + str(right_curverad) + ' m.')
     # Calculate the lane lines center and the car center
-    lane_lines_center = (left_base + right_base)/2
+    lane_lines_center = ((left_base + right_base)/2 - img.shape[1]/2*xmpp)*824/640 + 655*xmpp
     car_center = xmpp*image.shape[1]/2
     # vehicle position with respect to center
     offset = car_center - lane_lines_center
@@ -68,7 +78,6 @@ def plotLane(image):
     # TO DO: Warp the detected lane boundaries back onto the original image.
     warped_img = np.zeros_like(out_img)
     #here can draw two lane lines into the image
-
     y = left_line.ally
 
     # Define the lane lines points

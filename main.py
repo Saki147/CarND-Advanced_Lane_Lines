@@ -24,7 +24,8 @@ images = glob.glob('camera_cal/calibration*.jpg')
 objpoints, imgpoints = cc.CameraCalibration(images)
 
 # Test undistortion on an image
-filepath = 'test_images/straight_lines1.jpg'
+#filepath = 'test_images/straight_lines1.jpg'
+filepath = 'test_images/test1.jpg'
 img = cv2.imread(filepath)
 img_size = (img.shape[1], img.shape[0])
 
@@ -45,44 +46,47 @@ pickle.dump( dist_pickle, open( "wide_dist_pickle.p", "wb" ) )
 # TO DO: Apply a distortion to a raw image
 dst = cv2.undistort(img, mtx, dist, None, mtx)
 # Save the undistorted image into the output_images folder
-cv2.imwrite('output_images/dst_straight_lines1.jpg', dst, None)
+#cv2.imwrite('output_images/dst_straight_lines1.jpg', dst, None)
+cv2.imwrite('output_images/dst_test1.jpg', dst, None)
 
 
 # TO DO: Use color transforms, gradients, etc., to create a thresholded binary image.
-img = cv2.imread('output_images/dst_straight_lines1.jpg')
+#img = cv2.imread('output_images/dst_straight_lines1.jpg')
+img = cv2.imread('output_images/dst_test1.jpg')
 # Use color transforms and gradients in HLS color space, to create a thresholded binary image
 threshold_binary = cg.ColorandGradient(img, s_thresh=(170, 255), sx_thresh=(30, 255))
 # Save the color_binary image into the output images folder
-cv2.imwrite('output_images/threshold_binary_straight_lines1.jpg', threshold_binary, None)
+#cv2.imwrite('output_images/threshold_binary_straight_lines1.jpg', threshold_binary, None)
+cv2.imwrite('output_images/threshold_binary_test1.jpg', threshold_binary, None)
 
 
 
 # TO DO: Apply a mask of region of interest
-vertices = np.array([[(100,720), (565,460), (725, 460), (1180, 720)]], dtype=np.int32)
+vertices = np.array([[(100,720), (500,460), (800, 460), (1180, 720)]],
+                    dtype=np.int32)
 masked_img = pt.region_of_interest(threshold_binary, vertices)
 # Save the masked image into the output images folder
-cv2.imwrite('output_images/masked_straight_lines1.jpg', masked_img, None)
-
-#clean the masked iamge by avoid the little noise point
-#min_sz = 30
-#cleaned = morphology.remove_small_objects(masked_img, min_size=min_sz, connectivity=1)
-#cv2.imwrite('output_images/cleaned_straight_lines1.jpg', cleaned, None)
+#cv2.imwrite('output_images/masked_straight_lines1.jpg', masked_img, None)
+cv2.imwrite('output_images/masked_test1.jpg', masked_img, None)
 
 
 # TO DO: Apply a perspective transform to rectify binary image ("birds-eye view")
 warped, M = pt.bird_eye(masked_img)
-cv2.imwrite('output_images/warped_straight_lines1.jpg', warped, None)
-
+#cv2.imwrite('output_images/warped_straight_lines1.jpg', warped, None)
+cv2.imwrite('output_images/warped_test1.jpg', warped, None)
 
 # TO DO: Detect lane pixels and fit to find the lane boundary.
-binary_warped = mpimg.imread('output_images/warped_straight_lines1.jpg')
+#binary_warped = mpimg.imread('output_images/warped_straight_lines1.jpg')
+binary_warped = np.copy(warped)
 leftx, lefty, rightx, righty, out_img = fl.find_lane_pixels(binary_warped)
 
 # Fit the polynomial equation and get the parameters for left and right lane lines
 lane_lines, left_fit, right_fit, left_fitx, right_fitx = fl.fit_polynomial(binary_warped)
-#plt.imshow(lane_lines)
-#plt.show()
-cv2.imwrite('output_images/lane_lines_straight_lines1.jpg', lane_lines, None)
+plt.imshow(lane_lines)
+plt.axis('off')
+plt.show()
+#cv2.imwrite('output_images/lane_lines_straight_lines1.jpg', lane_lines, None)
+cv2.imwrite('output_images/lane_lines_test1.jpg', lane_lines, None)
 
 
 # TO DO: Determine the curvature of the lane and vehicle position with respect to center.
@@ -91,7 +95,7 @@ ploty = np.linspace(0, ynum-1, num=ynum)
 # Calculate the lane lines curvature at the bottom of the image in real world
 # Convert the pixels into the distance and fit in the polynomial equations
 ympp = 3 / 100  # meters per pixel in y dimension
-xmpp = 3.7 / 800  # meters per pixel in x dimension
+xmpp = 3.7 / 630  #800 # meters per pixel in x dimension
 ploty = ympp*ploty # distance in y in real world
 left_fit, right_fit, left_base, right_base = fl.fit_real_world_polynomial(binary_warped, ympp, xmpp)
 # Calculate the curvature in the real world
@@ -99,7 +103,9 @@ left_curverad, right_curverad = fl.measure_curvature_pixels(ploty, left_fit, rig
 avg_curvature = (left_curverad + right_curverad)/2
 print('The left curvature is ' + str(left_curverad) + ' m, and the right curvature is ' + str(right_curverad) + ' m.')
 # Calculate the lane lines center and the car center
-lane_lines_center = (left_base + right_base)/2
+
+lane_lines_center =((left_base + right_base)/2 - img.shape[1]/2*xmpp)*824/640\
+                   + 655*xmpp
 car_center = xmpp*img_size[0]/2
 # vehicle position with respect to center
 offset = car_center - lane_lines_center
@@ -126,7 +132,7 @@ fill_lane = cv2.fillPoly(mask, np.int32(vertices), (0, 200, 0))
 # Add the information text on the image
 cv2.putText(fill_lane,'|',(int(fill_lane.shape[1]/2), fill_lane.shape[0]-10), cv2.FONT_HERSHEY_SIMPLEX,2,(0,0,255),8)
 cv2.putText(fill_lane,'|',(int(lane_lines_center/xmpp), fill_lane.shape[0]-10), cv2.FONT_HERSHEY_SIMPLEX,1,(255,0,0),8)
-cv2.imwrite('output_images/fill_lane_straight_lines1.jpg', fill_lane, None)
+#cv2.imwrite('output_images/fill_lane_straight_lines1.jpg', fill_lane, None)
 unwarped_lane, Minv = pt.unwarp(fill_lane)
 result = cv2.addWeighted(img, 1., unwarped_lane, 0.6, 0.)
 
@@ -135,7 +141,8 @@ result = cv2.addWeighted(img, 1., unwarped_lane, 0.6, 0.)
 cv2.putText(result,'Vehicle is ' + str(round(offset,3))+'m'+' with respect to the lane center',
             (50,100),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,255),thickness=2)
 cv2.putText(result,'Radius of curvature: '+str(round(avg_curvature))+'m',(50,50),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,255),thickness=2)
-cv2.imwrite('output_images/final_unwarped_straight_lines1.jpg', result, None)
+#cv2.imwrite('output_images/final_unwarped_straight_lines1.jpg', result, None)
+cv2.imwrite('output_images/final_unwarped_test1.jpg', result, None)
 result = cv2.cvtColor(result, cv2.COLOR_BGR2RGB)
 
 plt.title('Final Result')
